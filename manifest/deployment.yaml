@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: navteqtmcdedi-deployment
+  namespace: uat
+  labels:
+    app: navteqtmcdedi
+    team: etl
+    type: uat
+    comp: di
+    price: ttdi
+spec:
+  selector:
+    matchLabels:
+      app: navteqtmcdedi
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: navteqtmcdedi
+        team: etl
+        type: uat
+        comp: di
+        price: ttdi
+    spec:
+      enableServiceLinks: false
+      containers:
+      - name: navteqtmcdedi
+        image: isgdfeacr.azurecr.io/uat_navteqtmcdedi:#{Build.BuildId}#
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 200m
+            memory: 2200Mi
+          limits:
+            cpu: 600m
+            memory: 4000Mi
+        ports:
+        - containerPort: 8080
+          name: web
+        volumeMounts: 
+        - mountPath: /project
+          name: project
+        - mountPath: /navteqtmcdedi_xml
+          name: navteqtmcdedi-xml
+      tolerations:
+      - effect: NoSchedule
+        key: kubernetes.azure.com/scalesetpriority
+        operator: Equal
+        value: spot
+      imagePullSecrets:
+      - name: acr-dfe-secret
+      nodeSelector:
+        weathersenserdi: "true"
+      volumes:
+        - azureFile:
+            secretName: dfeuatfileshare-secret
+            shareName: dfeuatfileshare/dfe_uat/airflow/project
+          name: project
+        - azureFile:
+            secretName: dfeuatfileshare-secret
+            shareName: dfeuatfileshare/dfe_uat/navteqtmcdedi_xml
+          name: navteqtmcdedi-xml
+      restartPolicy: Always
