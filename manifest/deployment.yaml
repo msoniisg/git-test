@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: navteqtmcdedi-deployment
-  namespace: uat
+  namespace: main
   labels:
     app: navteqtmcdedi
     team: etl
-    type: uat
+    type: main
     comp: di
     price: ttdi
 spec:
@@ -21,14 +21,14 @@ spec:
       labels:
         app: navteqtmcdedi
         team: etl
-        type: uat
+        type: main
         comp: di
         price: ttdi
     spec:
       enableServiceLinks: false
       containers:
       - name: navteqtmcdedi
-        image: isgdfeacr.azurecr.io/uat_navteqtmcdedi:#{Build.BuildId}#
+        image: isgdfeacr.azurecr.io/main_navteqtmcdedi:#{Build.BuildId}#
         imagePullPolicy: Always
         resources:
           requests:
@@ -56,11 +56,11 @@ spec:
         weathersenserdi: "true"
       volumes:
         - azureFile:
-            secretName: dfeuatfileshare-secret
-            shareName: dfeuatfileshare/dfe_uat/airflow/project
+            secretName: dfemainfileshare-secret
+            shareName: dfemainfileshare/dfe_main/airflow/project
           name: project
         - azureFile:
-            secretName: dfeuatfileshare-secret
-            shareName: dfeuatfileshare/dfe_uat/navteqtmcdedi_xml
+            secretName: dfemainfileshare-secret
+            shareName: dfemainfileshare/dfe_main/navteqtmcdedi_xml
           name: navteqtmcdedi-xml
       restartPolicy: Always
